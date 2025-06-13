@@ -22,8 +22,6 @@ export class User {
     return new User(props);
   }
 
-  public static finByEmail(){}
-
   public get id(){
     return this.props.id;
   }

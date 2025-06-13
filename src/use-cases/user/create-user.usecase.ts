@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { User } from "../../domain/entities/user";
 import { IUserRepository } from "../../domain/repositories/iuser";
 import { Usecase } from "../usecase";
@@ -21,7 +22,13 @@ export class CreateUserUsecase implements Usecase<CreateUserInputDto, CreateUser
   }
 
   public async execute({name, email, password}: CreateUserInputDto): Promise<CreateUserOutputDto> {
-    const _User = User.create(name, email, password);
+    
+    const userExist = await this.userRepository.findByEmail(email);
+    if(userExist) throw new Error('User already exists');
+
+    const hashedPasss = await bcrypt.hash(password, 10);
+
+    const _User = User.create(name, email, hashedPasss);
     
     await this.userRepository.save(_User);
     

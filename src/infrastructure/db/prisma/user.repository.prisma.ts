@@ -10,10 +10,13 @@ export class UserRepositoryPrisma implements IUserRepository{
       return new UserRepositoryPrisma(prisma);
   }
   
-  public async save(user: User): Promise<void> {
+  public async findByEmail(email: string): Promise<User | null> {
+    const data = await this.prisma.user.findUnique({ where: { email } });
+    if(!data) return null;
+    return User.with(data);
+  }
 
-    console.log('repositório')
-    console.log(user.email)
+  public async save(user: User): Promise<void> {
 
     const data = {
       id: user.id,
@@ -25,6 +28,7 @@ export class UserRepositoryPrisma implements IUserRepository{
     await this.prisma.user.create({ data });
 
   }
+
   public async  list(): Promise<User[]> {
     const users = await this.prisma.user.findMany();
 
