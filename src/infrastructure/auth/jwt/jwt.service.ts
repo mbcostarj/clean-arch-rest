@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { RedisClientType } from "redis";
 import { ITokenService } from "../../../domain/services/itoken-service";
 
 export class JwtService implements ITokenService {

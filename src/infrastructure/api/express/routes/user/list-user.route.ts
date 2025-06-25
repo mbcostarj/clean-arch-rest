@@ -37,23 +37,8 @@ export class ListUserRoute implements Route {
   public getHandler(){
     return async (request: Request, response: Response) => {
       const output = await this.listUserService.execute();
-      
-      const responseBody = this.present(output);
-
-      response.status(200).json(responseBody).send();
+      response.status(200).json(output).send();
     }
   } 
-
-  private present(input: ListUserOutputDto): ListUserResponseDto{
-    const response: ListUserResponseDto = {
-      users: input.users.map((u)=> ({
-        id: u.id,
-        name: u.name,
-        email: u.email
-      }))
-    };
-
-    return response;
-  }
 
 }

@@ -10,6 +10,7 @@ import { ListUserUsecase } from "./use-cases/user/list-user.usecase";
 import { JwtService } from "./infrastructure/auth/jwt/jwt.service";
 import { RedisTokenStore } from "./infrastructure/auth/redis/redis.token.store";
 import { AutenticateUserRoute } from "./infrastructure/api/express/routes/user/autenticate-user.route";
+import { BcryptEncrypter } from "./infrastructure/services/bcrypt-encrypter";
 
 async function main(){
 
@@ -18,12 +19,13 @@ async function main(){
 
   const jwtService = new JwtService(process.env.JWT_SECRET!);
   const tokenStore = new RedisTokenStore(redisClient);
+  const encrypter = new BcryptEncrypter();
 
   const _Repository = UserRepositoryPrisma.create(prisma);
   
-  const createUserUsecase = CreateUserUsecase.create(_Repository);
+  const createUserUsecase = CreateUserUsecase.create(_Repository, encrypter);
   const listUserUsecase = ListUserUsecase.create(_Repository);
-  const autenticateUserUsecase = AutenticateUserUsecase.create(_Repository, jwtService, tokenStore);
+  const autenticateUserUsecase = AutenticateUserUsecase.create(_Repository, jwtService, tokenStore, encrypter);
 
   const createUserRoute = CreateUserRoute.create(createUserUsecase);
   const listUserRoute = ListUserRoute.create(listUserUsecase);

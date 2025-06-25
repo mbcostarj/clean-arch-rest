@@ -1,10 +1,9 @@
-import { createClient } from "redis";
 import { IUserRepository } from "../../domain/repositories/iuser";
 import { Usecase } from "../usecase";
-import bcrypt from "bcryptjs";
-import jwt from 'jsonwebtoken';
 import { ITokenService } from "../../domain/services/itoken-service";
 import { ITokenStore } from "../../domain/services/itoken-store";
+import { IEncrypter } from "../../domain/services/iencrypter";
+import { AutenticateUserPresenter } from "./presenter/autenticate-user.presenter";
 
 export interface LoginInputDto {
   email: string;
@@ -27,47 +26,37 @@ export class AutenticateUserUsecase implements Usecase<LoginInputDto, LoginOutpu
   private constructor(
     private readonly userRepository: IUserRepository,
     private tokenService: ITokenService,
-    private tokenStore: ITokenStore
+    private tokenStore: ITokenStore,
+    private readonly encrypter: IEncrypter
   ){}
 
-  public static create(userRepository: IUserRepository, tokenService: ITokenService, tokenStore: ITokenStore){
-    return new AutenticateUserUsecase(userRepository, tokenService, tokenStore);
+  public static create(
+    userRepository: IUserRepository, 
+    tokenService: ITokenService, 
+    tokenStore: ITokenStore, 
+    encrypter: IEncrypter
+  ){
+    return new AutenticateUserUsecase(userRepository, tokenService, tokenStore, encrypter);
   }
 
   public async execute(input: LoginInputDto): Promise<LoginOutputDto> {
     
     const user = await this.userRepository.findByEmail(input.email);
     if(!user) {
-      return {
-        status: false,
-        message: 'User not found' 
-      };
+      return AutenticateUserPresenter.userNotFound();
     }
     
-    const isValid = await bcrypt.compare(input.password, user.password);
+    const isValid = await this.encrypter.compare(input.password, user.password);
     
     if (!isValid) {
-      return {
-        status: false,
-        message: 'Invalid password',
-      };
+      return AutenticateUserPresenter.invalidPassword();
     }
     
     const payload = { sub: user.id, name: user.name, email: user.email };
     const token = this.tokenService.sign(payload);
-
     await this.tokenStore.set(user.id, token);
 
-    return {
-      status: true,
-      message: "Login successfully",
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
-    };
+    return  AutenticateUserPresenter.toAoutput(user, token);
 
   }
 }

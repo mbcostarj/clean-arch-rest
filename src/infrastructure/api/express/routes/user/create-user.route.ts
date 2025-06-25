@@ -37,9 +37,7 @@ export class CreateUserRoute implements Route {
 
       const output: CreateUserOutputDto = await this.createUserService.execute(input);
 
-      const responseBody = this.present(output);
-
-      response.status(201).json(responseBody).send();
+      response.status(201).json(output).send();
 
     }
   }
@@ -50,11 +48,6 @@ export class CreateUserRoute implements Route {
 
   public getMethod(): HttpMethod {
     return this.method;
-  }
-
-  private present(input: CreateUserResponseDto): CreateUserResponseDto{
-    const response = { id: input.id };
-    return response;
   }
 
 }
