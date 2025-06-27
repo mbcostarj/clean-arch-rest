@@ -16,6 +16,10 @@ export class ApiExpress implements Api {
     return new ApiExpress(routes);
   }
 
+  public getApp(): Express {
+    return this.app;
+  }
+
   private addRoutes(routes: Route[]){
     routes.forEach((route => {
       const path = route.getPath();

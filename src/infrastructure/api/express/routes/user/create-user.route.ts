@@ -37,7 +37,7 @@ export class CreateUserRoute implements Route {
 
       const output: CreateUserOutputDto = await this.createUserService.execute(input);
 
-      response.status(201).json(output).send();
+      response.status(output.code).json(output).send();
 
     }
   }

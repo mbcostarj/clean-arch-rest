@@ -13,6 +13,7 @@ export type CreateUserInputDto = {
 
 export type CreateUserOutputDto = {
   status: boolean;
+  code: number;
   message: string;
   id?: string;
 }
@@ -31,8 +32,6 @@ export class CreateUserUsecase implements Usecase<CreateUserInputDto, CreateUser
   public async execute({name, email, password}: CreateUserInputDto): Promise<CreateUserOutputDto> {
     
     const userExist = await this.userRepository.findByEmail(email);
-    
-   // console.log("userExist", userExist)
 
     if(userExist) return CreateUserPresenter.userExist();
 

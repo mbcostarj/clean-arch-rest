@@ -12,6 +12,7 @@ export interface LoginInputDto {
 
 export interface LoginOutputDto {
   status: boolean;
+  code: number;
   message: string;
   token?: string;
   user?: {

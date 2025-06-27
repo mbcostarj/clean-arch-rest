@@ -1,9 +1,11 @@
 import { Request, response, Response } from "express"
 import { HttpMethod, Route } from "../route"
 import { AutenticateUserUsecase, LoginInputDto, LoginOutputDto } from "../../../../../use-cases/user/autenticate-user.usecase"
+import { ErrorMessages } from "../../../../../shared/messages"
 
 export type AutenticateUserResponseDto = {
   status: boolean,
+  code: number,
   message: string,
   token: string,
   user: {
@@ -35,7 +37,7 @@ export class AutenticateUserRoute implements Route {
       const input: LoginInputDto = { email, password }; 
       const output: LoginOutputDto = await this.autenticateUserService.execute(input);
 
-      response.status(201).json(output).send();
+      response.status(output.code).json(output).send();      
     }
   }
 

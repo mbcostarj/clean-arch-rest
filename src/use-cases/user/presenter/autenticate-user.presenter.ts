@@ -7,6 +7,7 @@ export class AutenticateUserPresenter {
   static userNotFound(): LoginOutputDto{
     return {
       status: false,
+      code: 404,
       message: ErrorMessages.USER_NOT_FOUND
     };
   }
@@ -14,6 +15,7 @@ export class AutenticateUserPresenter {
   static invalidPassword(): LoginOutputDto{
     return {
         status: false,
+        code: 401,
         message: ErrorMessages.INVALID_PASSWORD,
       };
   }
@@ -21,6 +23,7 @@ export class AutenticateUserPresenter {
   static toAoutput(user: User, token: string): LoginOutputDto{
     return {
       status: true,
+      code: 201,
       message: SuccessMessages.LOGIN_SUCCESSFULLY,
       token,
       user: {
