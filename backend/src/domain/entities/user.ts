@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 export type UserProps = {
   id: string;
   name: string;

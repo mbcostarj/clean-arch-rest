@@ -20,7 +20,7 @@ function getDirectoryStructure(dirPath, indent = 0) {
   return structure;
 }
 
-const projectRoot = './';
+const projectRoot = './../frontend/';
 const directoryStructure = getDirectoryStructure(projectRoot);
 fs.writeFileSync('estrutura_do_projeto.txt', directoryStructure);
 
