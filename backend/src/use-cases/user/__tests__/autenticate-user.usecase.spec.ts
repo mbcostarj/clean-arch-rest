@@ -8,7 +8,7 @@ import { AutenticateUserUsecase } from "../autenticate-user.usecase";
 
 describe("AutenticateUsecase", ()=>{
 
-  const user = User.create("John Doe", "john.doe@test.com", "hashed_password");
+  const user = User.create("John Doe", "john.doe@test.com", "21955663322", "hashed_password");
   let mockUserRepository: IUserRepository;
   let mockTokenService: ITokenService;
   let mockTokenStore: ITokenStore;
@@ -18,6 +18,7 @@ describe("AutenticateUsecase", ()=>{
     
     mockUserRepository = {
       findByEmail: jest.fn(),
+      findByPhone: jest.fn(),
       save: jest.fn(),
       list: jest.fn(),
     }
@@ -54,6 +55,7 @@ describe("AutenticateUsecase", ()=>{
     });
 
     expect(result).toEqual({
+      code: 401,
       status: false,
       message: ErrorMessages.INVALID_PASSWORD
     });
@@ -80,6 +82,7 @@ describe("AutenticateUsecase", ()=>{
     });
 
     expect(result).toEqual({
+      code: 201,
       status: true,
       message: SuccessMessages.LOGIN_SUCCESSFULLY,
       token: fakeToken,

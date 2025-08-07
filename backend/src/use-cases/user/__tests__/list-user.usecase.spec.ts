@@ -8,6 +8,7 @@ describe('ListUserUsecase', () => {
   beforeEach(() => {
     mockUserRepository = {
       findByEmail: jest.fn(),
+      findByPhone: jest.fn(),
       save: jest.fn(),
       list: jest.fn()
     };
@@ -18,8 +19,8 @@ describe('ListUserUsecase', () => {
   it('shold list users and return them as DTOs', async () => {
     //Arrange
     const mockUsers: User[] = [
-      User.create("John Doe", "john.doe@test.com", "pass123"),
-      User.create("Blue Tom", "bluetom@test.com", "pass321")
+      User.create("John Doe", "john.doe@test.com", "pass123", "21992450336"),
+      User.create("Blue Tom", "bluetom@test.com", "pass321", "2199664444")
     ];
 
     (mockUserRepository.list as jest.Mock).mockResolvedValue(mockUsers);
@@ -32,8 +33,8 @@ describe('ListUserUsecase', () => {
     //Assert
     expect(result).toEqual({
       users: [
-        {id: mockUsers[0].id, name: "John Doe", email: "john.doe@test.com"},
-        {id: mockUsers[1].id, name: "Blue Tom", email: "bluetom@test.com"}
+        {id: mockUsers[0].id, name: "John Doe", email: "john.doe@test.com", phone: "21992450336"},
+        {id: mockUsers[1].id, name: "Blue Tom", email: "bluetom@test.com", phone: "2199664444"}
       ]
     });
 

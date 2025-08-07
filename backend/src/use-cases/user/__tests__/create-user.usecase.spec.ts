@@ -16,6 +16,7 @@ describe('CreateUserUsecase', () => {
   beforeEach(() => {
     mockUserRepository = {
       findByEmail: jest.fn(),
+      findByPhone: jest.fn(),
       save: jest.fn(),
       list: jest.fn()
     };
@@ -30,6 +31,7 @@ describe('CreateUserUsecase', () => {
 
   it('should create a user and return id', async () => {
     (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue(null);
+    (mockUserRepository.findByPhone as jest.Mock).mockResolvedValue(null);
     (mockUserRepository.save as jest.Mock).mockResolvedValue(undefined);
 
     const usecase = CreateUserUsecase.create(mockUserRepository, mockEncrypter);
@@ -37,11 +39,13 @@ describe('CreateUserUsecase', () => {
     const result = await usecase.execute({
       name: "John Test",
       email: "john.test@gmail.com",
-      password: "123456"
+      phone: "21992450336",
+      password: "123456",
     });
 
     expect(result).toHaveProperty('id');
     expect(mockUserRepository.findByEmail).toHaveBeenCalledTimes(1);
+    expect(mockUserRepository.findByPhone).toHaveBeenCalledTimes(1);
     expect(mockEncrypter.hash).toHaveBeenCalledWith("123456");
     expect(mockUserRepository.save).toHaveBeenCalledTimes(1);
   });
@@ -50,7 +54,8 @@ describe('CreateUserUsecase', () => {
     (mockUserRepository.findByEmail as jest.Mock).mockResolvedValue({
       id: 'any-id',
       name: 'John Test',
-      email: 'john.test@gmail.com',
+      email: 'john.test@gmail.com', // <--
+      phone: '21922335566',
       password: 'hashed_password'
     });
 
@@ -58,16 +63,46 @@ describe('CreateUserUsecase', () => {
 
     const result = await usecase.execute({
       name: "John Test",
-      email: "john.test@gmail.com",
-      password: "123456"
+      email: "john.test@gmail.com", // <--
+      phone: "21992450336",
+      password: "123456",
     });
     
     expect(result).toEqual({
+      code: 401,
       status: false,
       message: ErrorMessages.USER_ALREADY_EXISTS
     });
 
     expect(mockUserRepository.findByEmail).toHaveBeenCalledTimes(1);
+    expect(mockEncrypter.hash).not.toHaveBeenCalled();
+    expect(mockUserRepository.save).not.toHaveBeenCalled();
+  });
+
+  it('should error if phone number already exist', async () => {
+    (mockUserRepository.findByPhone as jest.Mock).mockResolvedValue({
+      id: 'any-id',
+      name: 'John Test',
+      email: 'john.test@gmail.com',
+      phone: '21922335566', // <--
+      password: 'hashed_password'
+    });
+
+    const usecase = CreateUserUsecase.create(mockUserRepository, mockEncrypter);
+    const result = await usecase.execute({
+      name: "John Test",
+      email: "john.test@gmail.com",
+      phone: "21922335566", // <--
+      password: "123456",
+    });
+
+    expect(result).toEqual({
+      code: 401,
+      status: false,
+      message: ErrorMessages.USER_ALREADY_EXISTS
+    });
+
+    expect(mockUserRepository.findByPhone).toHaveBeenCalledTimes(1);
     expect(mockEncrypter.hash).not.toHaveBeenCalled();
     expect(mockUserRepository.save).not.toHaveBeenCalled();
   });

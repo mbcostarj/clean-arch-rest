@@ -8,7 +8,8 @@ import { create } from "node:domain";
 export type CreateUserInputDto = {
   name: string,
   email: string,
-  password: string
+  password: string,
+  phone: string
 }
 
 export type CreateUserOutputDto = {
@@ -29,15 +30,17 @@ export class CreateUserUsecase implements Usecase<CreateUserInputDto, CreateUser
     return new CreateUserUsecase(userRepository, encrypter);
   }
 
-  public async execute({name, email, password}: CreateUserInputDto): Promise<CreateUserOutputDto> {
-    
-    const userExist = await this.userRepository.findByEmail(email);
+  public async execute({name, email, password, phone}: CreateUserInputDto): Promise<CreateUserOutputDto> {
 
-    if(userExist) return CreateUserPresenter.userExist();
+    const emailExist = await this.userRepository.findByEmail(email);
+    
+    const phoneExist = await this.userRepository.findByPhone(phone);
+
+    if(emailExist || phoneExist) return CreateUserPresenter.userExist();
 
     const hashedPasss = await this.encrypter.hash(password);
 
-    const _User = User.create(name, email, hashedPasss);
+    const _User = User.create(name, email, hashedPasss, phone);
     
     await this.userRepository.save(_User);
     

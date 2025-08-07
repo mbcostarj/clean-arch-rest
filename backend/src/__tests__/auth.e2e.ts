@@ -14,10 +14,15 @@ describe("Auth E2E", ()=>{
     await prisma.user.deleteMany();
   });
 
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
   it("shold register and then login a user successfully", async ()=> {
     const userData = {
       name: "John Doe",
       email: "john.doe@test.com",
+      phone: "21922335566",
       password: "123456"
     }
 
@@ -39,6 +44,7 @@ describe("Auth E2E", ()=>{
       .expect(201);
 
     expect(resLogin.body).toMatchObject({
+      code: 201,
       status: true,
       message: SuccessMessages.LOGIN_SUCCESSFULLY,
       token: expect.any(String),
@@ -55,6 +61,7 @@ describe("Auth E2E", ()=>{
     const userData = {
       name: "John Doe",
       email: "john.doe@test.com",
+      phone: "2133445566",
       password: "123456"
     };
 
@@ -69,6 +76,7 @@ describe("Auth E2E", ()=>{
       .expect(401);
 
     expect(res.body).toMatchObject({
+      code: 401,
       status: false,
       message: ErrorMessages.INVALID_PASSWORD
     });
@@ -84,6 +92,7 @@ describe("Auth E2E", ()=>{
       .expect(404);
 
     expect(res.body).toMatchObject({
+      code: 404,
       status: false,
       message: ErrorMessages.USER_NOT_FOUND
     });

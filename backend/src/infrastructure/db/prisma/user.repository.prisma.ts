@@ -16,12 +16,19 @@ export class UserRepositoryPrisma implements IUserRepository{
     return User.with(data);
   }
 
+  public async findByPhone(phone: string): Promise<User | null>{
+    const data = await this.prisma.user.findUnique({ where: {phone} });
+    if(!data) return null;
+    return User.with(data);
+  }
+
   public async save(user: User): Promise<void> {
 
     const data = {
       id: user.id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
       password: user.password
     }
     
@@ -37,6 +44,7 @@ export class UserRepositoryPrisma implements IUserRepository{
         id: u.id,
         name: u.name,
         email: u.email,
+        phone: u.phone,
         password: u.password
       });
 

@@ -27,12 +27,13 @@ export class CreateUserRoute implements Route {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const {name, email, password} = request.body;
+      const {name, email, phone, password} = request.body;
 
       const input: CreateUserInputDto = {
         name,
         email,
-        password
+        phone,
+        password,
       }
 
       const output: CreateUserOutputDto = await this.createUserService.execute(input);

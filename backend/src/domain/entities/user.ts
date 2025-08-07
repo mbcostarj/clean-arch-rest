@@ -5,18 +5,20 @@ export type UserProps = {
   name: string;
   email: string;
   password: string;
+  phone: string
 }
 
 export class User {
 
   private constructor(private props: UserProps){}
 
-  public static create(name: string, email: string, password: string){
+  public static create(name: string, email: string, password: string, phone: string){
     return new User({
       id: crypto.randomUUID().toString(),
       name,
       email,
-      password
+      password,
+      phone
     });
   }
 
@@ -38,5 +40,9 @@ export class User {
 
   public get password(){
     return this.props.password;
+  }
+
+  public get phone(){
+    return this.props.phone;
   }
 }

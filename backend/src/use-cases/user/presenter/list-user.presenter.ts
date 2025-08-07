@@ -8,6 +8,7 @@ export class ListUserPresenter {
         id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
       })),
     };
   }
